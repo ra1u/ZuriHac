@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#pandoc -s  -t slidy SLIDES -o zurihac.html -V slidy-url=myslidy
+pandoc -s  -t s5 SLIDES -o zurihac.html

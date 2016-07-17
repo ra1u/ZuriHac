@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="version" content="S5 1.1" />
+  <meta name="author" content="Zurihac" />
+  <title>Clash - Programming FPGA in Haskell</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!-- configuration parameters -->
+  <meta name="defaultView" content="slideshow" />
+  <meta name="controlVis" content="hidden" />
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <!-- style sheet links -->
+  <link rel="stylesheet" href="s5/default/slides.css" type="text/css" media="projection" id="slideProj" />
+  <link rel="stylesheet" href="s5/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+  <link rel="stylesheet" href="s5/default/print.css" type="text/css" media="print" id="slidePrint" />
+  <link rel="stylesheet" href="s5/default/opera.css" type="text/css" media="projection" id="operaFix" />
+  <!-- S5 JS -->
+  <script src="s5/default/slides.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="layout">
+<div id="controls"></div>
+<div id="currentSlide"></div>
+<div id="header"></div>
+<div id="footer">
+  <h1>Luka Rahne</h1>
+  <h2>Clash - Programming FPGA in Haskell</h2>
+</div>
+</div>
+<div class="presentation">
+<div class="titleslide slide">
+  <h1 class="title">Clash - Programming FPGA in Haskell</h1>
+  <h3 class="author">Zurihac</h3>
+  <h4 class="date">Luka Rahne</h4>
+</div>
+<div id="clash" class="slide section level1">
+<h1>Clash</h1>
+<ul>
+<li>http://www.clash-lang.org/</li>
+<li>actively developed by Christiaan Baaij</li>
+<li>haskell syntax and semantics</li>
+<li>generates description of digital circuit</li>
+</ul>
+</div>
+<div id="fpga-and-asic" class="slide section level1">
+<h1>Fpga and ASIC</h1>
+<ul>
+<li>field-programmable gate array (FPGA)</li>
+<li>application-specific integrated circuit (ASIC)</li>
+<li>digital and analog circuits</li>
+<li>high throughput</li>
+<li>low power</li>
+<li>low latency response - order of ns</li>
+</ul>
+</div>
+<div id="combinatorial-circuits" class="slide section level1">
+<h1>Combinatorial circuits</h1>
+<table>
+<thead>
+<tr class="header">
+<th align="center"><img src="pic/and.svg" alt="and" /></th>
+<th align="center"><img src="pic/or.svg" alt="or" /></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">and</td>
+<td align="center">or</td>
+</tr>
+<tr class="even">
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td align="center"><img src="pic/xor.svg" alt="xor" /></td>
+<td align="center"><img src="pic/not.svg" alt="not" /></td>
+</tr>
+<tr class="even">
+<td align="center">xor</td>
+<td align="center">not</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>primitives</li>
+<li>instant response</li>
+<li>dag like structure</li>
+</ul>
+</div>
+<div id="full-adder" class="slide section level1">
+<h1>Full adder</h1>
+<div class="figure">
+<img src="pic/fulladd.svg" />
+
+</div>
+<div class="sourceCode" id="fullAdder"><pre class="sourceCode haskell"><code class="sourceCode haskell">fullAdder a b cin <span class="fu">=</span> (s,cout) <span class="kw">where</span>
+    t <span class="fu">=</span> a <span class="ot">`xor`</span> b
+    s <span class="fu">=</span> t <span class="ot">`xor`</span> cin
+    cout <span class="fu">=</span> (cin <span class="fu">.&amp;.</span> t) <span class="fu">.|.</span> (a <span class="fu">.&amp;.</span> b) </code></pre></div>
+</div>
+<div id="synchronous-circuits" class="slide section level1">
+<h1>Synchronous circuits</h1>
+<div class="figure">
+<img src="pic/register.svg" alt="register" />
+<p class="caption">register</p>
+</div>
+<div class="incremental">
+<div class="sourceCode" id="fullAdder"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">register ::</span> a <span class="ot">-&gt;</span> <span class="dt">Signal</span> a <span class="ot">-&gt;</span> <span class="dt">Signal</span> a</code></pre></div>
+<ul>
+<li>primitive for synchronous logic</li>
+<li>circular references allowed</li>
+</ul>
+</div>
+</div>
+<div id="integratoraccumulator" class="slide section level1">
+<h1>Integrator/Accumulator</h1>
+<div class="figure">
+<img src="pic/integrator.svg" alt="integrator" />
+<p class="caption">integrator</p>
+</div>
+<div class="sourceCode" id="integrator"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">integrator ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Signal</span> a <span class="ot">-&gt;</span> <span class="dt">Signal</span> a
+integrator i <span class="fu">=</span> r <span class="kw">where</span>
+    r <span class="fu">=</span> liftA2 (<span class="fu">+</span>) i (register <span class="dv">0</span> r) </code></pre></div>
+</div>
+<div id="hello-world" class="slide section level1">
+<h1>Hello world</h1>
+<div class="sourceCode" id="helloworld"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">&gt;</span> fib <span class="fu">=</span> register <span class="dv">1</span> (liftA2 (<span class="fu">+</span>) fib (register <span class="dv">0</span> fib)) </code></pre></div>
+<div class="sourceCode" id="helloworld"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">&gt;</span> sampleN <span class="dv">10</span> fib
+[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">8</span>,<span class="dv">13</span>,<span class="dv">21</span>,<span class="dv">34</span>,<span class="dv">55</span>]</code></pre></div>
+</div>
+<div id="sinhronous-modeling" class="slide section level1">
+<h1>Sinhronous modeling</h1>
+<div class="figure">
+<img src="pic/sinh.svg" />
+
+</div>
+<div class="sourceCode" id="mealy"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mealy ::</span> (s <span class="ot">-&gt;</span> i <span class="ot">-&gt;</span> (s, o)) 
+      <span class="ot">-&gt;</span> s  
+      <span class="ot">-&gt;</span> <span class="dt">Signal</span> i <span class="ot">-&gt;</span> <span class="dt">Signal</span> o</code></pre></div>
+</div>
+<div id="generating-code" class="slide section level1">
+<h1>Generating code</h1>
+<ul>
+<li>VHDL, Verilog, System Verilog</li>
+</ul>
+<div class="sourceCode" id="integrator"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- file: Integrator.hs</span>
+<span class="kw">module</span> <span class="dt">Integrator</span> <span class="kw">where</span>
+<span class="kw">import </span><span class="dt">CLaSH.Prelude</span>
+
+integrator i <span class="fu">=</span> r <span class="kw">where</span>
+    r <span class="fu">=</span> liftA2 (<span class="fu">+</span>) i (register <span class="dv">0</span> r)  
+
+<span class="ot">topEntity ::</span> <span class="dt">Signal</span> (<span class="dt">Signed</span> <span class="dv">10</span>) <span class="ot">-&gt;</span>  <span class="dt">Signal</span> (<span class="dt">Signed</span> <span class="dv">10</span>)
+topEntity <span class="fu">=</span> integrator</code></pre></div>
+<pre><code>% clash Integrator.hs --verilog</code></pre>
+<pre><code> % clash --interactive Integrator.hs
+*Integrator&gt; :verilog</code></pre>
+</div>
+<div id="de0-nano" class="slide section level1">
+<h1>de0-nano</h1>
+<ul>
+<li>beginner friendly documentation.<br />
+</li>
+<li>blog: http://qbaylogic.com/blog/2016/05/12/clash-fpga-starter.html</li>
+<li>FPGA: Altera, Cyclone IV - 22k logic elements</li>
+</ul>
+<p><img src="pic/de0-nano.jpg" height="300"></p>
+</div>
+<div id="redritaya" class="slide section level1">
+<h1>RedRitaya</h1>
+<ul>
+<li>less friendly for newcomers</li>
+<li>hackage: lambdaya-bus</li>
+<li>Fpga: Xilinx, Zinq - 27k LUT</li>
+</ul>
+<p><img src="pic/red-pitaya.png" height="300"></p>
+</div>
+<div id="section" class="slide section level1">
+<h1></h1>
+<p><img src="pic/zinq1.png" height="500"></p>
+</div>
+<div id="section-1" class="slide section level1">
+<h1></h1>
+<p><img src="pic/zinq3.png" height="500"></p>
+</div>
+<div id="section-2" class="slide section level1">
+<h1></h1>
+<p><img src="pic/zinq4.png" height="500"></p>
+</div>
+<div id="section-3" class="slide section level1">
+<h1></h1>
+<p><img src="pic/zinq5.png" height="500"></p>
+</div>
+<div id="standard-clash-library" class="slide section level1">
+<h1>Standard clash library</h1>
+<ul class="incremental">
+<li>CLaSH.Prelude</li>
+<li><code>Signed n</code> , <code>USigned n</code> , <code>SFixed i f</code> , <code>UFixed i f</code></li>
+<li><code>Vec n a</code> - for example (<code>Vec 6 Bit</code>)</li>
+<li><code>bundle</code> / <code>unbundle</code> ex <code>bundle :: (Signal a,Signal b) -&gt;  Signal (a,b)</code></li>
+<li>blockRam , blockRom</li>
+<li>clock synchronizer</li>
+<li>testbenches</li>
+</ul>
+</div>
+<div id="haskellghc-features-that-works-for-hardware" class="slide section level1">
+<h1>Haskell/Ghc features that works for hardware</h1>
+<ul>
+<li>non recursive types (tuples, Maybe, records, Either)</li>
+<li>case expression, pattern matching, guards ...</li>
+<li>template haskell</li>
+<li>external libraries (lenses, transformers, ..)</li>
+<li>ghc features <code>{-# LANGUAGE GhcMagic #-}</code></li>
+</ul>
+</div>
+<div id="thank-you-for-your-attention" class="slide section level1">
+<h1>Thank you for your attention</h1>
+<p>luka@rahne.si<br />
+slides: https://github.com/ra1u/ZuriHac</p>
+</div>
+</div>
+</body>
+</html>

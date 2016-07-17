@@ -1,0 +1,171 @@
+% Clash - Programming FPGA in Haskell
+% Zurihac
+% Luka Rahne
+
+
+# Clash
+
+- http://www.clash-lang.org/
+- actively developed by Christiaan Baaij
+- haskell syntax and semantics 
+- generates description of digital circuit
+
+# Fpga and ASIC
+- field-programmable gate array (FPGA) 
+- application-specific integrated circuit (ASIC)
+- digital and analog circuits
+- high throughput
+- low power
+- low latency response - order of ns
+
+
+# Combinatorial circuits
+
+| ![and](pic/and.svg) | ![or](pic/or.svg)   |
+|:-------------------:|:-------------------:|
+| and                 | or                  |
+|                     |                     |
+| ![xor](pic/xor.svg) | ![not](pic/not.svg) |
+| xor                 | not                 |
+
+- primitives 
+- instant response
+- dag like structure
+
+
+# Full adder
+
+![](pic/fulladd.svg)
+
+~~~~ {#fullAdder .haskell }
+fullAdder a b cin = (s,cout) where
+    t = a `xor` b
+    s = t `xor` cin
+    cout = (cin .&. t) .|. (a .&. b) 
+~~~~
+
+
+# Synchronous circuits
+
+![register](pic/register.svg)
+
+. . .
+
+~~~~ {#fullAdder .haskell }
+register :: a -> Signal a -> Signal a
+~~~~
+
+- primitive for synchronous logic
+- circular references allowed
+
+
+# Integrator/Accumulator
+![integrator](pic/integrator.svg)
+
+~~~~ {#integrator .haskell }
+integrator :: Num a => Signal a -> Signal a
+integrator i = r where
+    r = liftA2 (+) i (register 0 r) 
+~~~~ 
+
+# Hello world
+
+~~~~ {#helloworld .haskell }
+> fib = register 1 (liftA2 (+) fib (register 0 fib)) 
+~~~~
+
+~~~~ {#helloworld .haskell }
+> sampleN 10 fib
+[1,1,2,3,5,8,13,21,34,55]
+~~~~
+
+# Sinhronous modeling
+
+
+![](pic/sinh.svg)
+
+~~~~ {#mealy .haskell }
+mealy :: (s -> i -> (s, o)) 
+      -> s  
+      -> Signal i -> Signal o
+~~~~ 
+
+
+# Generating code
+- VHDL, Verilog, System Verilog
+
+~~~~ {#integrator .haskell }
+-- file: Integrator.hs
+module Integrator where
+import CLaSH.Prelude
+
+integrator i = r where
+    r = liftA2 (+) i (register 0 r)  
+
+topEntity :: Signal (Signed 10) ->  Signal (Signed 10)
+topEntity = integrator
+~~~~ 
+~~~~
+% clash Integrator.hs --verilog
+~~~~
+~~~~
+ % clash --interactive Integrator.hs
+*Integrator> :verilog
+~~~~
+
+
+# de0-nano
+
+- beginner friendly documentation.     
+- blog: http://qbaylogic.com/blog/2016/05/12/clash-fpga-starter.html
+- FPGA: Altera, Cyclone IV - 22k logic elements
+
+ <img src="pic/de0-nano.jpg" height="300"> 
+
+
+
+# RedRitaya
+
+- less friendly for newcomers
+- hackage: lambdaya-bus 
+- Fpga: Xilinx, Zinq - 27k LUT
+ 
+ <img src="pic/red-pitaya.png" height="300"> 
+
+# 
+<img src="pic/zinq1.png" height="500"> 
+
+# 
+<img src="pic/zinq3.png" height="500"> 
+
+# 
+<img src="pic/zinq4.png" height="500"> 
+
+# 
+<img src="pic/zinq5.png" height="500"> 
+
+# Standard clash library
+
+> - CLaSH.Prelude
+> - `Signed n` , `USigned n` , `SFixed i f` , `UFixed i f`
+> - `Vec n a` - for example (`Vec 6 Bit`)
+> - `bundle` / `unbundle` ex `bundle :: (Signal a,Signal b) ->  Signal (a,b)`
+> - blockRam , blockRom
+> - clock synchronizer
+> - testbenches
+
+# Haskell/Ghc features that works for hardware 
+
+- non recursive types (tuples, Maybe, records, Either)
+- case expression, pattern matching, guards ...
+- template haskell
+- external libraries (lenses, transformers, ..)
+- ghc features `{-# LANGUAGE GhcMagic #-}`
+
+
+
+# Thank you for your attention
+
+luka@rahne.si  
+slides: https://github.com/ra1u/ZuriHac  
+
